@@ -6,7 +6,7 @@ const express = require("express");
 // require mysql
 var mysql = require("mysql");
 
-var request = require("request");
+var request = require("request"); 
 const router = express.Router();
 const bodyParser = require("body-parser");
 const app = express();
@@ -16,7 +16,17 @@ const port = 5000;
 // ----------- MYSQL CODE START --------------
 //  with major help from this video: https://www.youtube.com/watch?v=EN6Dx22cPRI&list=PL47Uf6xF4760GqrLtaKm4bEKNY7u7aZQw&index=5
 
+// import for the registration form
+// const cors = require("cors");
+
+// // app.use json for the registration form
+// app.use(express.json());
+// app.use(cors());
+
+
+
 // still left to do: actually host and create a database and then connect it to line 30 (replace 'sampleDB' with actual db)
+
 
 // connect code to mysql database:
 // const db = mysql.createConnection({
@@ -37,6 +47,8 @@ const port = 5000;
 //     console.log("Connected");
 //   }
 // });
+
+// -- get all tasks
 
 // app.get('/', function(req,res){
 //   // code about mysql here
@@ -114,6 +126,52 @@ const port = 5000;
 //     res.send("small win deleted - just one");
 //   });
 // });
+
+
+// // -- USER REGISTRATION 
+// // : https://www.youtube.com/watch?v=W-sZo6Gtx_E&t=353s
+// app.post('/register', (req, res)=> {
+
+//   // firstname comes from front end --> signup.js file in the register function
+//   const firstname = req.body.firstname;
+//   const lastname = req.body.lastname;
+//   const username = req.body.username;
+//   const email = req.body.email;
+//   const password = req.body.password;
+
+//   // users is the name of the database (user table in sql)
+//   db.query("INSERT INTO users (firstname, lastname, username, email, password) VALUES (?,?,?,?,?)", [firstname, lastname, username, email, password], 
+//   (err, result)=> {
+//     console.log(err)
+//   } )
+// })
+
+// // --USER LOGIN
+// // : https://www.youtube.com/watch?v=W-sZo6Gtx_E&t=353s
+
+// app.post('/login', (req, res) => {
+//     // firstname comes from front end --> signup.js file in the register function
+//     const username = req.body.username;
+//     const password = req.body.password;
+  
+//     // users is the name of the database (user table in sql)
+//     db.query("SELECT * FROM users WHERE username = ? AND password = ?", [ username, password], 
+//     (err, result)=> {
+//       // if err occurs, log the error
+//       if(err){
+//       res.send({err:err})
+//       } 
+
+//        // if there is a result ( a user with that username and password), send that result back to front end
+//       if (result.length > 0 ) {
+//         res.send(result)
+//       } else {
+//         // if no user found then send back a message saying no user found
+//         res.send({message: "no user found/wrong password"})
+//       }
+      
+//     } )
+// })
 
 // app.listen should go here if using mysql
 
