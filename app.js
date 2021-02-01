@@ -8,7 +8,15 @@ var mysql = require("mysql");
 
 var request = require("request"); 
 const router = express.Router();
+
+// for password hash
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+
 const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+
 const app = express();
 // same default port as react (3000), so change it to 5000
 const port = 5000;
@@ -20,8 +28,24 @@ const port = 5000;
 // const cors = require("cors");
 
 // // app.use json for the registration form
-// app.use(express.json());
-// app.use(cors());
+app.use(express.json());
+app.use(cors({
+  origin: ["http://localhost:3000"],
+  methods: ["GET", "POST"],
+  credentials: true
+}));
+app.use(cookieParser());
+app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(session({
+  key: "userId",
+  secret: "my-secret-101",
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    expires: 60 * 60 * 24,
+  }
+}))
 
 
 
@@ -130,48 +154,76 @@ const port = 5000;
 
 // // -- USER REGISTRATION 
 // // : https://www.youtube.com/watch?v=W-sZo6Gtx_E&t=353s
-// app.post('/register', (req, res)=> {
+app.post('/register', (req, res)=> {
 
-//   // firstname comes from front end --> signup.js file in the register function
-//   const firstname = req.body.firstname;
-//   const lastname = req.body.lastname;
-//   const username = req.body.username;
-//   const email = req.body.email;
-//   const password = req.body.password;
+  // firstname comes from front end --> signup.js file in the register function
+  const firstname = req.body.firstname;
+  const lastname = req.body.lastname;
+  const username = req.body.username;
+  const email = req.body.email;
+  const password = req.body.password;
 
-//   // users is the name of the database (user table in sql)
-//   db.query("INSERT INTO users (firstname, lastname, username, email, password) VALUES (?,?,?,?,?)", [firstname, lastname, username, email, password], 
-//   (err, result)=> {
-//     console.log(err)
-//   } )
-// })
+  // bcrypt for password hashing
+  bcrypt.hash(password, saltRounds, (err, hash) => {
+
+      if(err){
+        console.log(err)
+      }
+      // users is the name of the database (user table in sql)
+      db.query("INSERT INTO users (firstname, lastname, username, email, password) VALUES (?,?,?,?,?)", [firstname, lastname, username, email, hash], 
+      (err, result)=> {
+        console.log(err)
+      })
+  });
+
+})
 
 // // --USER LOGIN
 // // : https://www.youtube.com/watch?v=W-sZo6Gtx_E&t=353s
+// // : https://youtu.be/sTHWNPVNvm8 --> cookies, sessions, password hash
 
-// app.post('/login', (req, res) => {
-//     // firstname comes from front end --> signup.js file in the register function
-//     const username = req.body.username;
-//     const password = req.body.password;
+app.get('/login', (req, res) => {
+  if(req.session.user){
+    res.send({loggedIn: true, user: req.session.user})
+  } else {
+    res.send({loggedIn: false})
+  }
+})
+
+app.post('/login', (req, res) => {
+    // firstname comes from front end --> signup.js file in the register function
+    const username = req.body.username;
+    const password = req.body.password;
   
-//     // users is the name of the database (user table in sql)
-//     db.query("SELECT * FROM users WHERE username = ? AND password = ?", [ username, password], 
-//     (err, result)=> {
-//       // if err occurs, log the error
-//       if(err){
-//       res.send({err:err})
-//       } 
+    // users is the name of the database (user table in sql)
+    db.query(
+      "SELECT * FROM users WHERE username = ?", 
+      username, 
+    (err, result)=> {
+      // if err occurs, log the error
+      if(err){
+      res.send({err:err})
+      } 
 
-//        // if there is a result ( a user with that username and password), send that result back to front end
-//       if (result.length > 0 ) {
-//         res.send(result)
-//       } else {
-//         // if no user found then send back a message saying no user found
-//         res.send({message: "no user found/wrong password"})
-//       }
+       // if there is a result ( a user with that username and password), send that result back to front end
+      if (result.length > 0 ) {
+        bcrypt.compare(password, result[0].password, (error, response) => {
+          if (response){
+            req.session.user = result;
+            console.log(req.session.user);
+             res.send(result)
+          } else {
+            // if no user found then send back a message saying no user found
+        res.send({message: "no user found/wrong password"})
+          }
+        })
+      } else {
+        // if no user found then send back a message saying no user found
+        res.send({message: "user doesn't exist"})
+      }
       
-//     } )
-// })
+    } )
+})
 
 // app.listen should go here if using mysql
 
