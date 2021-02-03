@@ -25,7 +25,7 @@ const port = 5000;
 //  with major help from this video: https://www.youtube.com/watch?v=EN6Dx22cPRI&list=PL47Uf6xF4760GqrLtaKm4bEKNY7u7aZQw&index=5
 
 // import for the registration form
-// const cors = require("cors");
+const cors = require("cors");
 
 // // app.use json for the registration form
 app.use(express.json());
