@@ -51,105 +51,121 @@ app.use(session({
 
 // still left to do: actually host and create a database and then connect it to line 30 (replace 'sampleDB' with actual db)
 
+// // maybe create db 
 
-// connect code to mysql database:
-// const db = mysql.createConnection({
-//   // properties ...
-//   host: "localhost",
-//   user: "root",
-//   // change this eventually to a custom password
-//   password: "",
-//   // will change once we have a db
-//   database: "sampleDB",
-// });
+app.get('/createdb', (req,res) =>{
+  let sql = 'CREATE DATABASE smallwinsdb';
+  db.query(sql, (err, result) => {
+    if(err) throw err;
+    console.log(result);
+    res.send('database created');
+  })
+})
 
-// db.connect((err) => {
-//   // if error
-//   if (err) {
-//     throw err;
-//   } else {
-//     console.log("Connected");
-//   }
-// });
+// // connect code to mysql database:
+const db = mysql.createConnection({
+  // properties ...
+  host: "localhost",
+  user: "root",
+  port: "3306",
+  // change this eventually to a custom password
+  password: "Berlin1!"
+  // will change once we have a db
+  database: "",
+});
+
+
+db.connect((err) => {
+  // if error
+  if (err) {
+    throw err;
+  } else {
+    console.log("Connected");
+  }
+});
 
 // -- get all tasks
 
-// app.get('/', function(req,res){
-//   // code about mysql here
-//   // EX: (use sql query within paranthesis):
-//  connection.query("SELECT * FROM DATABASE WHERE THIS = THAT", function(error, rows,fields)
-// // if(!!error){
-//    console.log('Error in query');
-//    } else {
-// console.log('successful query')
-//    // parse with your rows/fields
-// })
-// })
+app.get('/', function(req,res){
+  // code about mysql here
+  // EX: (use sql query within paranthesis):
+ connection.query("SELECT * FROM DATABASE WHERE THIS = THAT", function(error, rows,fields){
+    if(!!error){
+      console.log('Error in query');
+   } else {
+      console.log('successful query');
+      console.log('rows n fields: ----' + rows, fields);
+
+   // parse with your rows/fields
+}}
+)
+})
 
 //  -- CREATE A TABLE IN SQL
-// app.get('/createwinstable', (req, res) => {
-//   //  // the create table ... is all sql
-//   let sql = 'CREATE TABLE wins(id int AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id)';
-//   db.query(sql, (err, result) => {
-//     if(err) throw err;
-//     console.log(result);
-//     res.send('wins table created');
-//   })
-// })
+app.get('/createwinstable', (req, res) => {
+  //  // the create table ... is all sql
+  let sql = 'CREATE TABLE wins(id int AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id)';
+  db.query(sql, (err, result) => {
+    if(err) throw err;
+    console.log(result);
+    res.send('wins table created');
+  })
+})
 
 // -- INSERT WIN 1
-// app.get('/addwin1', (req,res) => {
-// // whatever is being passed in as a new small win (from input)
-//   let smallwin = {winMessage: 'win message one'};
-//   let sql = 'INSERT INTO wins SET ?';
-//   let query = db.query(sql, smallwin, (err, result) => {
-//     if(err) throw err;
-//     console.log(result);
-//     res.send('small win 1 added');
-//   })
-// });
+app.get('/addwin1', (req,res) => {
+// whatever is being passed in as a new small win (from input)
+  let smallwin = {winMessage: 'win one'};
+  let sql = 'INSERT INTO wins SET ?';
+  let query = db.query(sql, smallwin, (err, result) => {
+    if(err) throw err;
+    console.log(result);
+    res.send('small win 1 added');
+  })
+});
 
-// -- SELECT SMALL WIINS
-// app.get('/getsmallwins', (req,res) => {
-//   let sql = 'SELECT * FROM smallwins';
-//   let query = db.query(sql, (err, results) => {
-//     if(err) throw err;
-//     console.log(results);
-//     res.send('small wins fetched');
-//   })
-// });
+// //-- SELECT SMALL WIINS
+app.get('/getsmallwins', (req,res) => {
+  let sql = 'SELECT * FROM smallwins';
+  let query = db.query(sql, (err, results) => {
+    if(err) throw err;
+    console.log(results);
+    res.send('small wins fetched');
+  })
+});
 
-//  -- FETCH INDIVIDUAL WINS
-// app.get('/getsmallwins/:id', (req,res) => {
-//   let sql = `SELECT * FROM smallwins WHERE id = ${req.params.id}`;
-//   let query = db.query(sql, (err, result) => {
-//     if(err) throw err;
-//     console.log(result);
-//     res.send('small win fetched - just one');
-//   })
-// });
+ // //-- FETCH INDIVIDUAL WINS
+app.get('/getsmallwins/:id', (req,res) => {
+  let sql = `SELECT * FROM smallwins WHERE id = ${req.params.id}`;
+  let query = db.query(sql, (err, result) => {
+    if(err) throw err;
+    console.log(result);
+    res.send('small win fetched - just one');
+  })
+});
 
-//  -- UPDATE WINS
-// app.get('/updatesmallwin/:id', (req,res) => {
-//   let newWinMsg = "new small win message to be updated to";
-//   let sql = `UPDATE wins SET message = '${newWinMsg}' WHERE id = ${req.params.id}`;
-//   let query = db.query(sql, (err, result) => {
-//     if(err) throw err;
-//     console.log(result);
-//     res.send('small win updated - just one');
-//   })
-// });
 
-// -- DELETE WIN
-// app.get("/deletesmallwin/:id", (req, res) => {
-//   let newWinMsg = "new small win message to be updated to";
-//   let sql = `DELETE FROM wins WHERE id = ${req.params.id}`;
-//   let query = db.query(sql, (err, result) => {
-//     if (err) throw err;
-//     console.log(result);
-//     res.send("small win deleted - just one");
-//   });
-// });
+ // //-- UPDATE WINS
+app.get('/updatesmallwin/:id', (req,res) => {
+  let newWinMsg = "new small win message to be updated to";
+  let sql = `UPDATE wins SET message = '${newWinMsg}' WHERE id = ${req.params.id}`;
+  let query = db.query(sql, (err, result) => {
+    if(err) throw err;
+    console.log(result);
+    res.send('small win updated - just one');
+  })
+});
+
+// //-- DELETE WIN
+app.get("/deletesmallwin/:id", (req, res) => {
+  let newWinMsg = "new small win message to be updated to";
+  let sql = `DELETE FROM wins WHERE id = ${req.params.id}`;
+  let query = db.query(sql, (err, result) => {
+    if (err) throw err;
+    console.log(result);
+    res.send("small win deleted - just one");
+  });
+});
 
 
 // // -- USER REGISTRATION 
@@ -183,6 +199,7 @@ app.post('/register', (req, res)=> {
 // // : https://youtu.be/sTHWNPVNvm8 --> cookies, sessions, password hash
 
 app.get('/login', (req, res) => {
+  console.log(`WE ARE HERE -------- response in backend from making get request to /login: ${res}`);
   if(req.session.user){
     res.send({loggedIn: true, user: req.session.user})
   } else {
@@ -191,6 +208,7 @@ app.get('/login', (req, res) => {
 })
 
 app.post('/login', (req, res) => {
+  console.log(`___________post request from backend to /login`);
     // firstname comes from front end --> signup.js file in the register function
     const username = req.body.username;
     const password = req.body.password;
@@ -229,34 +247,34 @@ app.post('/login', (req, res) => {
 
 // ----------- MYSQL CODE END --------------
 
-//  ----------------- **BEFORE ADDING MYSQL CODE** ----------------
-app.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+//  ----------------- **THE CODE I USED BEFORE ADDING MYSQL CODE** ----------------
+// app.get("/", (req, res) => {
+//   res.send("Hello World!");
+// });
 // open up http://localhost:5000/ on web browser and you should see 'hello world'
 // you can also test in postman
 
 // I can create a brand new endpoint here
 // and test it in Postman
-app.get("/newEndpoint", (req, res) => {
-  res.send("A whole new ... endpoint");
-});
+// app.get("/newEndpoint", (req, res) => {
+//   res.send("A whole new ... endpoint");
+// });
 
-//  HERE'S WHAT I WOULD NEED FOR SMALL WINS
-app.get("/smallwins", (req, res) => {
-  request(
-    "https://jsonplaceholder.typicode.com/comments?postId=1",
-    function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        //console.log(body); // print whatever's coming back
-        console.log("----------------------------------");
-        console.log(body);
-        res.send(body);
-      }
-    }
-  );
-  //   res.send("A whole new ... endpoint");
-});
+// //  HERE'S WHAT I WOULD NEED FOR SMALL WINS
+// app.get("/smallwins", (req, res) => {
+//   request(
+//     "https://jsonplaceholder.typicode.com/comments?postId=1",
+//     function (error, response, body) {
+//       if (!error && response.statusCode == 200) {
+//         //console.log(body); // print whatever's coming back
+//         console.log("----------------------------------");
+//         console.log(body);
+//         res.send(body);
+//       }
+//     }
+//   );
+//   //   res.send("A whole new ... endpoint");
+// });
 
 // POST
 // app.use(bodyParser.urlencoded({ extended: true }));
