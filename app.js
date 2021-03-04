@@ -69,9 +69,9 @@ const db = mysql.createConnection({
   user: "root",
   port: "3306",
   // change this eventually to a custom password
-  password: "Berlin1!"
+  password: "Berlin1!",
   // will change once we have a db
-  database: "",
+  database: "small_wins_db"
 });
 
 
