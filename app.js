@@ -66,6 +66,7 @@ app.get('/createdb', (req,res) =>{
 const db = mysql.createConnection({
   // properties ...
   host: "localhost",
+  // host: "127.0.0.1",
   user: "root",
   port: "3306",
   // change this eventually to a custom password
@@ -89,6 +90,7 @@ db.connect((err) => {
 app.get('/', function(req,res){
   // code about mysql here
   // EX: (use sql query within paranthesis):
+  // MAYBE: SELECT * FROM wins_table WHERE ... ((not so sure abou this part, but where user_id matches or is equal to the id being passed in from the user loggedin, so maybe add a loggedin id to the state in frontend if user is loggedin, so we can pass that around in the backend))
  connection.query("SELECT * FROM DATABASE WHERE THIS = THAT", function(error, rows,fields){
     if(!!error){
       console.log('Error in query');
@@ -102,15 +104,16 @@ app.get('/', function(req,res){
 })
 
 //  -- CREATE A TABLE IN SQL
-app.get('/createwinstable', (req, res) => {
-  //  // the create table ... is all sql
-  let sql = 'CREATE TABLE wins(id int AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id)';
-  db.query(sql, (err, result) => {
-    if(err) throw err;
-    console.log(result);
-    res.send('wins table created');
-  })
-})
+// I SORTA ALREADY DID THIS IN MYSQL WORKBENCH SO DON'T KNOW IF THIS IS REPETITIVE OR NOT
+// app.get('/createwinstable', (req, res) => {
+//   //  // the create table ... is all sql
+//   let sql = 'CREATE TABLE wins(id int AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id)';
+//   db.query(sql, (err, result) => {
+//     if(err) throw err;
+//     console.log(result);
+//     res.send('wins table created');
+//   })
+// })
 
 // -- INSERT WIN 1
 app.get('/addwin1', (req,res) => {
@@ -167,17 +170,22 @@ app.get("/deletesmallwin/:id", (req, res) => {
   });
 });
 
-
 // // -- USER REGISTRATION 
 // // : https://www.youtube.com/watch?v=W-sZo6Gtx_E&t=353s
 app.post('/register', (req, res)=> {
-
-  // firstname comes from front end --> signup.js file in the register function
+ console.log('register worked backend');
+ console.log('register response in backend: ' + res, req);
+ // firstname comes from front end --> signup.js file in the register function
   const firstname = req.body.firstname;
+  console.log(firstname);
   const lastname = req.body.lastname;
+  console.log(lastname);
   const username = req.body.username;
+  console.log(username);
   const email = req.body.email;
+  console.log(email);
   const password = req.body.password;
+  console.log(password);
 
   // bcrypt for password hashing
   bcrypt.hash(password, saltRounds, (err, hash) => {
@@ -186,7 +194,8 @@ app.post('/register', (req, res)=> {
         console.log(err)
       }
       // users is the name of the database (user table in sql)
-      db.query("INSERT INTO users (firstname, lastname, username, email, password) VALUES (?,?,?,?,?)", [firstname, lastname, username, email, hash], 
+      // EX: INSERT INTO nameOfTable (columnName1, columnName2, etc.) VALUES (valuePassedIn1, valuePassedIn2, etc.)
+      db.query("INSERT INTO users (first_name, last_name, username, email, hash_pass) VALUES (firstname, lastname, email, password)", [firstname, lastname, username, email, hash], 
       (err, result)=> {
         console.log(err)
       })
@@ -288,7 +297,7 @@ app.post('/login', (req, res) => {
 
 //  stays at bottom to point it to the right port
 app.listen(port, () => {
-  console.log(`Example app listening at http://localhost:${port}`);
+  console.log(`Small Wins App listening at http://localhost:${port}`);
 });
 
 // postgresql - free to be used with sql -->
