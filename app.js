@@ -63,14 +63,19 @@ app.get('/createdb', (req,res) =>{
 })
 
 // // connect code to mysql database:
+// // if it doesn't work it might be how node.js interacts with mysql
+// // if so, node would have to talk toa proxy and then talk to mysql
+// // create env file inside project - look up how to create a variable from env file - env file is a .
+// // use gitignore
+
 const db = mysql.createConnection({
   // properties ...
   host: "localhost",
   // host: "127.0.0.1",
-  user: "root",
+  user: "lauraruizroehrs",
   port: "3306",
-  // change this eventually to a custom password
-  password: "Berlin1!",
+  // change this eventually to a custom password - go look at your notes
+  // password: "",
   // will change once we have a db
   database: "small_wins_db"
 });
