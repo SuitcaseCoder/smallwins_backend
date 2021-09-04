@@ -1,6 +1,8 @@
 // video that helped me: https://www.youtube.com/watch?v=kJA9rDX7azM&t=286s
 //  article that helped me make post request: https://codeforgeek.com/handle-get-post-request-express-4/
 
+require('dotenv').config();
+
 // importing express --imported express.js using npm
 const express = require("express");
 // require mysql
@@ -54,7 +56,7 @@ app.use(session({
 // // maybe create db 
 
 app.get('/createdb', (req,res) =>{
-  let sql = 'CREATE DATABASE smallwinsdb';
+  let sql = 'CREATE DATABASE IF NOT EXISTS smallwinsdb';
   db.query(sql, (err, result) => {
     if(err) throw err;
     console.log(result);
@@ -64,26 +66,27 @@ app.get('/createdb', (req,res) =>{
 
 // // connect code to mysql database:
 // // if it doesn't work it might be how node.js interacts with mysql
-// // if so, node would have to talk toa proxy and then talk to mysql
+// // if so, node would have to talk to a proxy and then talk to mysql
 // // create env file inside project - look up how to create a variable from env file - env file is a .
 // // use gitignore
 
 const db = mysql.createConnection({
   // properties ...
-  host: "localhost",
-  // host: "127.0.0.1",
-  user: "lauraruizroehrs",
-  port: "3306",
+  // host: "localhost",
+  host: DB_HOST,
+  user: DB_USER,
+  port: DB_PORT,
   // change this eventually to a custom password - go look at your notes
-  // password: "",
+  password: DB_PASSWORD,
   // will change once we have a db
-  database: "small_wins_db"
+  database: DB_NAME
 });
 
 
 db.connect((err) => {
   // if error
   if (err) {
+    console.log(`err from app.js in sw_backend: ${err}`);
     throw err;
   } else {
     console.log("Connected");
@@ -110,15 +113,15 @@ app.get('/', function(req,res){
 
 //  -- CREATE A TABLE IN SQL
 // I SORTA ALREADY DID THIS IN MYSQL WORKBENCH SO DON'T KNOW IF THIS IS REPETITIVE OR NOT
-// app.get('/createwinstable', (req, res) => {
-//   //  // the create table ... is all sql
-//   let sql = 'CREATE TABLE wins(id int AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id)';
-//   db.query(sql, (err, result) => {
-//     if(err) throw err;
-//     console.log(result);
-//     res.send('wins table created');
-//   })
-// })
+app.get('/createwinstable', (req, res) => {
+  //  // the create table ... is all sql
+  let sql = 'CREATE TABLE wins(id int AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id)';
+  db.query(sql, (err, result) => {
+    if(err) throw err;
+    console.log(result);
+    res.send('wins table created');
+  })
+})
 
 // -- INSERT WIN 1
 app.get('/addwin1', (req,res) => {
@@ -257,7 +260,7 @@ app.post('/login', (req, res) => {
     } )
 })
 
-// app.listen should go here if using mysql
+// app.listen //should go here if using mysql
 
 // ----------- MYSQL CODE END --------------
 
