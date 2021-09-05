@@ -1,12 +1,12 @@
 // video that helped me: https://www.youtube.com/watch?v=kJA9rDX7azM&t=286s
 //  article that helped me make post request: https://codeforgeek.com/handle-get-post-request-express-4/
 
-require('dotenv').config();
+require('dotenv').config()
 
 // importing express --imported express.js using npm
 const express = require("express");
 // require mysql
-var mysql = require("mysql");
+var mysql = require("mysql2");
 
 var request = require("request"); 
 const router = express.Router();
@@ -59,7 +59,6 @@ app.get('/createdb', (req,res) =>{
   let sql = 'CREATE DATABASE IF NOT EXISTS smallwinsdb';
   db.query(sql, (err, result) => {
     if(err) throw err;
-    console.log(result);
     res.send('database created');
   })
 })
@@ -73,13 +72,13 @@ app.get('/createdb', (req,res) =>{
 const db = mysql.createConnection({
   // properties ...
   // host: "localhost",
-  host: DB_HOST,
-  user: DB_USER,
-  port: DB_PORT,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  port: process.env.DB_PORT,
   // change this eventually to a custom password - go look at your notes
-  password: DB_PASSWORD,
+  password: process.env.DB_PASSWORD,
   // will change once we have a db
-  database: DB_NAME
+  database: process.env.DB_NAME
 });
 
 
@@ -99,39 +98,56 @@ app.get('/', function(req,res){
   // code about mysql here
   // EX: (use sql query within paranthesis):
   // MAYBE: SELECT * FROM wins_table WHERE ... ((not so sure abou this part, but where user_id matches or is equal to the id being passed in from the user loggedin, so maybe add a loggedin id to the state in frontend if user is loggedin, so we can pass that around in the backend))
- connection.query("SELECT * FROM DATABASE WHERE THIS = THAT", function(error, rows,fields){
+ db.query("SELECT * FROM wins", function(error, rows, fields){
     if(!!error){
+      console.log(error);
       console.log('Error in query');
    } else {
-      console.log('successful query');
-      console.log('rows n fields: ----' + rows, fields);
-
+      console.log('SUCCESSFUL QUERY ON GET REQUEST (BACKEND)');
+      console.log('ROWS : ----> ');
+      console.log(rows);
+      console.log('FIELDS: ---> ');
+      console.log(fields);
    // parse with your rows/fields
+
+  //  now I have to find a way to 'return' or 'SEND' back rows (which is an array) OR row.win_title
+  res.send(rows);
 }}
 )
 })
 
 //  -- CREATE A TABLE IN SQL
 // I SORTA ALREADY DID THIS IN MYSQL WORKBENCH SO DON'T KNOW IF THIS IS REPETITIVE OR NOT
+// // I think I still need to create a table but where/how does that happen (9/4/21)
 app.get('/createwinstable', (req, res) => {
   //  // the create table ... is all sql
-  let sql = 'CREATE TABLE wins(id int AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id)';
+  // let sql = 'CREATE TABLE IF NOT EXISTS mywins(id INT AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id);';
+  let sql = 'CREATE TABLE IF NOT EXISTS wins (id INT NOT NULL AUTO_INCREMENT, win_title VARCHAR(255), win_body VARCHAR(255), PRIMARY KEY (id));';
   db.query(sql, (err, result) => {
     if(err) throw err;
-    console.log(result);
+    // console.log(result);
     res.send('wins table created');
   })
 })
 
 // -- INSERT WIN 1
-app.get('/addwin1', (req,res) => {
+// (9/4/21) changed app.get to app.post (right? because I'm INSERTING info into the db table, meaning I'm making apost requst.) and if you look at the post request in today.js on the frontend ... it just makes sense
+app.post('/addwin1', (req,res) => {
+  // console.log('------ REQUEST BODY BELOW -----')
+  // console.log(req.body);
 // whatever is being passed in as a new small win (from input)
-  let smallwin = {winMessage: 'win one'};
-  let sql = 'INSERT INTO wins SET ?';
+// req.body comes from const todayswins = {} ... from the frontend which should be whatever new win is added on the ui
+let smallwin = req.body;
+console.log('~~~~~ req.body in app.post ~~~~~');
+console.log(req.body);
+
+  // let sql = 'INSERT INTO wins SET ? , ?';
+  let sql = "INSERT INTO wins SET ?";
   let query = db.query(sql, smallwin, (err, result) => {
     if(err) throw err;
-    console.log(result);
-    res.send('small win 1 added');
+    // res.send('sending back from POST ');
+    res.send(smallwin);
+    // res.send('smallwin sent from POST ');
   })
 });
 
@@ -140,7 +156,7 @@ app.get('/getsmallwins', (req,res) => {
   let sql = 'SELECT * FROM smallwins';
   let query = db.query(sql, (err, results) => {
     if(err) throw err;
-    console.log(results);
+    // console.log(results);
     res.send('small wins fetched');
   })
 });
@@ -150,7 +166,7 @@ app.get('/getsmallwins/:id', (req,res) => {
   let sql = `SELECT * FROM smallwins WHERE id = ${req.params.id}`;
   let query = db.query(sql, (err, result) => {
     if(err) throw err;
-    console.log(result);
+    // console.log(result);
     res.send('small win fetched - just one');
   })
 });
@@ -162,7 +178,7 @@ app.get('/updatesmallwin/:id', (req,res) => {
   let sql = `UPDATE wins SET message = '${newWinMsg}' WHERE id = ${req.params.id}`;
   let query = db.query(sql, (err, result) => {
     if(err) throw err;
-    console.log(result);
+    // console.log(result);
     res.send('small win updated - just one');
   })
 });
@@ -173,7 +189,7 @@ app.get("/deletesmallwin/:id", (req, res) => {
   let sql = `DELETE FROM wins WHERE id = ${req.params.id}`;
   let query = db.query(sql, (err, result) => {
     if (err) throw err;
-    console.log(result);
+    // console.log(result);
     res.send("small win deleted - just one");
   });
 });
@@ -182,7 +198,7 @@ app.get("/deletesmallwin/:id", (req, res) => {
 // // : https://www.youtube.com/watch?v=W-sZo6Gtx_E&t=353s
 app.post('/register', (req, res)=> {
  console.log('register worked backend');
- console.log('register response in backend: ' + res, req);
+//  console.log('register response in backend: ' + res, req);
  // firstname comes from front end --> signup.js file in the register function
   const firstname = req.body.firstname;
   console.log(firstname);
