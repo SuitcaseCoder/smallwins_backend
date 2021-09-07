@@ -92,9 +92,29 @@ db.connect((err) => {
   }
 });
 
-// -- get all tasks
+// --- MOVED THIS HERE FROM BELOW 'GET ALL TASKS'
+//  -- CREATE A TABLE IN SQL
+// SHOULD THIS BE DONE SEPARATELY IN A MYSQL CONSOLE?
+// // I think I still need to create a table but where/how does that happen (9/4/21)
+ //app.get('/createwinstable', (req, res) => { // idk if this should be createwinstable or just /
+ app.get('/', (req, res) => {
+  //  console.log('~~~~~ TRIGGERED: @ app.get(/) ~~~~~')
 
+  // the create table ... is all sql
+ let sql = 'CREATE TABLE IF NOT EXISTS wins (id INT NOT NULL AUTO_INCREMENT, win_title VARCHAR(255), PRIMARY KEY (id));';
+ db.query(sql, (err, result) => {
+   if(err){
+     throw err
+   } else {
+   res.send('line111: ~~~ wins table created ~~~');
+   }
+ })
+})
+
+
+// -- get all tasks
 app.get('/', function(req,res){
+  console.log("~~~~~~~~~ app.get('/')~~~~~~~~~~")
   // code about mysql here
   // EX: (use sql query within paranthesis):
   // MAYBE: SELECT * FROM wins_table WHERE ... ((not so sure abou this part, but where user_id matches or is equal to the id being passed in from the user loggedin, so maybe add a loggedin id to the state in frontend if user is loggedin, so we can pass that around in the backend))
@@ -103,11 +123,12 @@ app.get('/', function(req,res){
       console.log(error);
       console.log('Error in query');
    } else {
-      console.log('SUCCESSFUL QUERY ON GET REQUEST (BACKEND)');
+     console.log("~~~~~~~~~ app.get('/') after Select * from table ~~~~~~~~~~");
+      // console.log('SUCCESSFUL QUERY ON GET REQUEST (BACKEND)');
       console.log('ROWS : ----> ');
       console.log(rows);
-      console.log('FIELDS: ---> ');
-      console.log(fields);
+      // console.log('FIELDS: ---> ');
+      // console.log(fields);
    // parse with your rows/fields
 
   //  now I have to find a way to 'return' or 'SEND' back rows (which is an array) OR row.win_title
@@ -116,44 +137,33 @@ app.get('/', function(req,res){
 )
 })
 
-//  -- CREATE A TABLE IN SQL
-// I SORTA ALREADY DID THIS IN MYSQL WORKBENCH SO DON'T KNOW IF THIS IS REPETITIVE OR NOT
-// // I think I still need to create a table but where/how does that happen (9/4/21)
-app.get('/createwinstable', (req, res) => {
-  //  // the create table ... is all sql
-  // let sql = 'CREATE TABLE IF NOT EXISTS mywins(id INT AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id);';
-  let sql = 'CREATE TABLE IF NOT EXISTS wins (id INT NOT NULL AUTO_INCREMENT, win_title VARCHAR(255), win_body VARCHAR(255), PRIMARY KEY (id));';
-  db.query(sql, (err, result) => {
-    if(err) throw err;
-    // console.log(result);
-    res.send('wins table created');
-  })
-})
 
 // -- INSERT WIN 1
 // (9/4/21) changed app.get to app.post (right? because I'm INSERTING info into the db table, meaning I'm making apost requst.) and if you look at the post request in today.js on the frontend ... it just makes sense
-app.post('/addwin1', (req,res) => {
-  // console.log('------ REQUEST BODY BELOW -----')
-  // console.log(req.body);
+// app.post('/addwin1', (req,res) => {
+app.post('/addwin1', (req,res)  => {
+  console.log('~~~~~ APP.POST (/ADDWIN1)  ~~~~~');
 // whatever is being passed in as a new small win (from input)
 // req.body comes from const todayswins = {} ... from the frontend which should be whatever new win is added on the ui
 let smallwin = req.body;
-console.log('~~~~~ req.body in app.post ~~~~~');
-console.log(req.body);
+// console.log('~~~~~ req.body in app.post ~~~~~');
+// console.log(req.body);
 
   // let sql = 'INSERT INTO wins SET ? , ?';
-  let sql = "INSERT INTO wins SET ?";
+  // CHECK INTO THIS! 'smallwins' needs to be from variable
+  let sql = `INSERT INTO wins (win_title) VALUES ('${smallwin}');`;
   let query = db.query(sql, smallwin, (err, result) => {
     if(err) throw err;
-    // res.send('sending back from POST ');
+    // res.send(' ~~~~ sending back from POST ~~~~~');
     res.send(smallwin);
     // res.send('smallwin sent from POST ');
   })
 });
 
 // //-- SELECT SMALL WIINS
-app.get('/getsmallwins', (req,res) => {
-  let sql = 'SELECT * FROM smallwins';
+// app.get('/getsmallwins', (req,res) => {
+  app.get('/', (req,res) => {
+let sql = 'SELECT * FROM smallwins';
   let query = db.query(sql, (err, results) => {
     if(err) throw err;
     // console.log(results);
