@@ -99,21 +99,17 @@ db.connect((err) => {
 // })
 
 
-// -- get all wins
+// get all wins
 app.get('/allwins', function(req,res){
-  // code about mysql here
-  // EX: (use sql query within paranthesis):
   // MAYBE: SELECT * FROM wins_table WHERE ... ((not so sure abou this part, but where user_id matches or is equal to the id being passed in from the user loggedin, so maybe add a loggedin id to the state in frontend if user is loggedin, so we can pass that around in the backend))
  db.query("SELECT * FROM wins", function(error, rows, fields){
     if(!!error){
       console.log(error);
       console.log('Error in query');
    } else {
-      // console.log('SUCCESSFUL QUERY ON /GET/allwins REQUEST (BACKEND)');
       console.log('ROWS : ----> ');
       console.log(rows);
-  //  now I have to find a way to 'return' or 'SEND' back rows (which is an array) OR row.win_title
-  res.send(rows);
+    res.send(rows);
 }}
 )
 })
@@ -124,21 +120,23 @@ app.get('/allwins', function(req,res){
 // app.post('/addwin1', (req,res) => {
 app.post('/addwin1', (req,res)  => {
 // whatever is being passed in as a new small win (from input)
-// req.body comes from const todayswins = {} ... from the frontend which should be whatever new win is added on the ui
 let smallwin = req.body;
-// console.log(smallwin);
-smallwin.map(row => {
-  console.log(row.win_title);
+console.log('------- SMALL WIN: REQ.BODY-------');
+console.log(smallwin);
+// smallwin.map(row => {
+  console.log(`#### SMALL WIN ID + WIN_TITLE ####`);
+  console.log(smallwin.id + smallwin.win_title);
   // let sql = 'INSERT INTO wins SET ? , ?';
   // CHECK INTO THIS! 'smallwins' needs to be from variable
-  let sql = `INSERT INTO wins (win_title) VALUES ('${row.win_title}');`;
-  let query = db.query(sql, row.win_title, (err, result) => {
+  let sql = `INSERT INTO wins (win_title) VALUES ('${smallwin.win_title}');`;
+  // let query =
+   db.query(sql, smallwin.win_title, (err, result) => {
     if(err) throw err;
     // res.send(' ~~~~ sending back from POST ~~~~~');
     res.send(smallwin);
     // res.send('smallwin sent from POST ');
   })
-  })
+  // })
 });
 
 // //-- SELECT SMALL WIINS
