@@ -120,23 +120,25 @@ app.get('/allwins', function(req,res){
 // app.post('/addwin1', (req,res) => {
 app.post('/addwin1', (req,res)  => {
 // whatever is being passed in as a new small win (from input)
-let smallwin = req.body;
+let addedWin = req.body;
 console.log('------- SMALL WIN: REQ.BODY-------');
-console.log(smallwin);
-// smallwin.map(row => {
+console.log(addedWin);
+// == I SHOULD NOT HAVE TO MAP THROUGH THIS ==
   console.log(`#### SMALL WIN ID + WIN_TITLE ####`);
-  console.log(smallwin.id + smallwin.win_title);
+  console.log(addedWin.id + addedWin.win_title);
   // let sql = 'INSERT INTO wins SET ? , ?';
   // CHECK INTO THIS! 'smallwins' needs to be from variable
-  let sql = `INSERT INTO wins (win_title) VALUES ('${smallwin.win_title}');`;
+  // figure out how to insert the ids (check auto-increment)
+  let sql = `INSERT INTO wins (win_title) VALUES ('${addedWin.win_title}');`;
   // let query =
-   db.query(sql, smallwin.win_title, (err, result) => {
+   db.query(sql, addedWin.win_title, (err, result) => {
     if(err) throw err;
-    // res.send(' ~~~~ sending back from POST ~~~~~');
-    res.send(smallwin);
+    // == WHAT SHOULD I SEND HERE? STATUS CODE or smallwin?? ==
+    console.log(res);
+    res.send();
+    
     // res.send('smallwin sent from POST ');
   })
-  // })
 });
 
 // //-- SELECT SMALL WIINS
