@@ -125,7 +125,7 @@ console.log('------- SMALL WIN: REQ.BODY-------');
 console.log(addedWin);
 // == I SHOULD NOT HAVE TO MAP THROUGH THIS ==
   console.log(`#### SMALL WIN ID + WIN_TITLE ####`);
-  console.log(addedWin.id + addedWin.win_title);
+  console.log(addedWin.id + "< -- > " + addedWin.win_title);
   // let sql = 'INSERT INTO wins SET ? , ?';
   // CHECK INTO THIS! 'smallwins' needs to be from variable
   // figure out how to insert the ids (check auto-increment)
@@ -134,7 +134,7 @@ console.log(addedWin);
    db.query(sql, addedWin.win_title, (err, result) => {
     if(err) throw err;
     // == WHAT SHOULD I SEND HERE? STATUS CODE or smallwin?? ==
-    console.log(res);
+    console.log(res.send);
     res.send();
     
     // res.send('smallwin sent from POST ');
