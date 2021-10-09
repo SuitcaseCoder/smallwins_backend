@@ -53,7 +53,13 @@ app.use(session({
 
 
 app.get('/createdb', (req,res) =>{
-  let sql = 'CREATE DATABASE IF NOT EXISTS smallwinsdb';
+  // let sql = 'CREATE DATABASE IF NOT EXISTS smallwinsdb';
+  let sql = `CREATE DATABASE IF NOT EXISTS smallwinsdb; CREATE TABLE IF NOT EXISTS users (
+    id INT NOT NULL AUTO_INCREMENT,
+    PRIMARY KEY(id),
+    DATE    DATE NOT NULL,
+    VALUE   SMALLINT(4) UNSIGNED NOT NULL
+);`;
   db.query(sql, (err, result) => {
     if(err) throw err;
     res.send('database created');
@@ -83,6 +89,9 @@ db.connect((err) => {
     console.log("Connected");
   }
 });
+
+
+// FETCH REQUESTS 
 
 // --- MOVED THIS HERE FROM BELOW 'GET ALL TASKS'
  //app.get('/createwinstable', (req, res) => { // idk if this should be createwinstable or just /
@@ -116,29 +125,15 @@ app.get('/allwins', function(req,res){
 
 
 // -- INSERT WIN 1
-// (9/4/21) changed app.get to app.post (right? because I'm INSERTING info into the db table, meaning I'm making apost requst.) and if you look at the post request in today.js on the frontend ... it just makes sense
-// app.post('/addwin1', (req,res) => {
 app.post('/addwin1', (req,res)  => {
 // whatever is being passed in as a new small win (from input)
 let addedWin = req.body;
-console.log('------- SMALL WIN: REQ.BODY-------');
-console.log(addedWin);
-// == I SHOULD NOT HAVE TO MAP THROUGH THIS ==
-  console.log(`#### SMALL WIN ID + WIN_TITLE ####`);
-  console.log(addedWin.id + "< -- > " + addedWin.win_title);
-  // let sql = 'INSERT INTO wins SET ? , ?';
-  // CHECK INTO THIS! 'smallwins' needs to be from variable
-  // figure out how to insert the ids (check auto-increment)
   let sql = `INSERT INTO wins (win_title) VALUES ('${addedWin.win_title}');`;
   // let query =
    db.query(sql, addedWin.win_title, (err, result) => {
     if(err) throw err;
-    // == WHAT SHOULD I SEND HERE? STATUS CODE or smallwin?? ==
-    console.log(res.send);
     res.send();
-    
-    // res.send('smallwin sent from POST ');
-  })
+    })
 });
 
 // //-- SELECT SMALL WIINS
@@ -175,18 +170,21 @@ app.get('/updatesmallwin/:id', (req,res) => {
 });
 
 // //-- DELETE WIN
-app.get("/deletesmallwin/:id", (req, res) => {
+app.delete("/deletesmallwin/:id", (req, res) => {
   let newWinMsg = "new small win message to be updated to";
   let sql = `DELETE FROM wins WHERE id = ${req.params.id}`;
   let query = db.query(sql, (err, result) => {
     if (err) throw err;
     // console.log(result);
-    res.send("small win deleted - just one");
+    res.send(newWinMsg);
   });
 });
 
 // // -- USER REGISTRATION 
 // // : https://www.youtube.com/watch?v=W-sZo6Gtx_E&t=353s
+//  let sql = 'CREATE TABLE IF NOT EXISTS wins (id INT NOT NULL AUTO_INCREMENT, win_title VARCHAR(255), PRIMARY KEY (id));';
+
+
 app.post('/register', (req, res)=> {
  console.log('register worked backend');
 //  console.log('register response in backend: ' + res, req);
@@ -204,7 +202,7 @@ app.post('/register', (req, res)=> {
 
   // bcrypt for password hashing
   bcrypt.hash(password, saltRounds, (err, hash) => {
-
+    console.log(hash);
       if(err){
         console.log(err)
       }
