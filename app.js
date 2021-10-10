@@ -54,12 +54,7 @@ app.use(session({
 
 app.get('/createdb', (req,res) =>{
   // let sql = 'CREATE DATABASE IF NOT EXISTS smallwinsdb';
-  let sql = `CREATE DATABASE IF NOT EXISTS smallwinsdb; CREATE TABLE IF NOT EXISTS users (
-    id INT NOT NULL AUTO_INCREMENT,
-    PRIMARY KEY(id),
-    DATE    DATE NOT NULL,
-    VALUE   SMALLINT(4) UNSIGNED NOT NULL
-);`;
+  let sql = `CREATE TABLE IF NOT EXISTS users(id INT NOT NULL AUTO_INCREMENT, PRIMARY KEY(id), first_name VARCHAR(255), last_name VARCHAR(255), username VARCHAR(255), email VARCHAR(320), hash VARCHAR(320), FOREIGN KEY (id) REFERENCES wins (id))`;
   db.query(sql, (err, result) => {
     if(err) throw err;
     res.send('database created');
@@ -189,9 +184,9 @@ app.post('/register', (req, res)=> {
  console.log('register worked backend');
 //  console.log('register response in backend: ' + res, req);
  // firstname comes from front end --> signup.js file in the register function
-  const firstname = req.body.firstname;
+  const firstname = req.body.first_name;
   console.log(firstname);
-  const lastname = req.body.lastname;
+  const lastname = req.body.last_name;
   console.log(lastname);
   const username = req.body.username;
   console.log(username);
@@ -208,7 +203,7 @@ app.post('/register', (req, res)=> {
       }
       // users is the name of the database (user table in sql)
       // EX: INSERT INTO nameOfTable (columnName1, columnName2, etc.) VALUES (valuePassedIn1, valuePassedIn2, etc.)
-      db.query("INSERT INTO users (first_name, last_name, username, email, hash_pass) VALUES (firstname, lastname, email, password)", [firstname, lastname, username, email, hash], 
+      db.query("INSERT INTO users (first_name, last_name, username, email, hash) VALUES (first_name, last_name, username, email, hash)", [firstname, lastname, username, email, hash], 
       (err, result)=> {
         console.log(err)
       })
