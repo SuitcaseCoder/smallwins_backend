@@ -185,27 +185,34 @@ app.post('/register', (req, res)=> {
 //  console.log('register response in backend: ' + res, req);
  // firstname comes from front end --> signup.js file in the register function
   const firstname = req.body.first_name;
-  console.log(firstname);
   const lastname = req.body.last_name;
-  console.log(lastname);
   const username = req.body.username;
-  console.log(username);
   const email = req.body.email;
-  console.log(email);
-  const password = req.body.password;
-  console.log(password);
+  const password =  req.body.password;
 
   // bcrypt for password hashing
   bcrypt.hash(password, saltRounds, (err, hash) => {
-    console.log(hash);
       if(err){
         console.log(err)
       }
+
       // users is the name of the database (user table in sql)
       // EX: INSERT INTO nameOfTable (columnName1, columnName2, etc.) VALUES (valuePassedIn1, valuePassedIn2, etc.)
-      db.query("INSERT INTO users (first_name, last_name, username, email, hash) VALUES (first_name, last_name, username, email, hash)", [firstname, lastname, username, email, hash], 
-      (err, result)=> {
+      // let sql = `INSERT INTO users (first_name, last_name, username, email, hash) VALUES (${firstname}, ${lastname}, ${username}, ${email}, ${hash})`;
+      // db.query(sql, [firstname, lastname, username, email, hash],
+      // [firstname, lastname, username, email, hash],
+      db.query(`INSERT INTO users (first_name, last_name, username, email, hash) VALUES ('${firstname}', '${lastname}', '${username}', '${email}', '${hash}');`,[firstname, lastname, username, email, hash], 
+      (err, result, fields)=> {
+        
+        console.log("--fields in signup hash--")
+        console.log(fields);
+        console.log("--result in signup hash--")
+        console.log(result);
+        console.log("--err in signup--")
         console.log(err)
+
+        if (err) throw err;
+        res.send({message: 'users saved, I think'});
       })
   });
 
