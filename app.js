@@ -225,6 +225,7 @@ app.post('/register', (req, res)=> {
 // gets called when login endpoint is hit
 app.get('/login', (req, res) => {
   console.log(`WE ARE HERE: response in backend from making get request to /login: `);
+  console.log(req.session.user);
   if(req.session.user){
     res.send({loggedIn: true, user: req.session.user})
   } else {
@@ -235,41 +236,40 @@ app.get('/login', (req, res) => {
 
 // gets called when login button gets clicked
 app.post('/login', (req, res) => {
-  console.log(`___________post request from backend to /login`);
-  console.log(req.body.username);
     // firstname comes from front end --> signup.js file in the register function
     const username = req.body.username;
     const password = req.body.password;
   
     // users is the name of the database (user table in sql)
     db.query(
-      `SELECT * FROM users WHERE username = ${username}`, 
-      // username, 
+      `SELECT * FROM users WHERE username = ?`, 
+      username, 
     (err, result)=> {
-      console.log("--- result ---");
-      console.log(JSON.stringify(result));
+      // console.log("--- result ---");
+      // console.log(JSON.stringify(result));
       // if err occurs, log the error
       if(err){
       res.send({err:err})
       } 
-      else 
-
+      // else 
        // if there is a result ( a user with that username and password), send that result back to front end
       if (result.length > 0 ) {
-        bcrypt.compare(password, result[0].password, (error, response) => {
+       // comparing the password entered on the UI, to the hashed password, and passing in a callback function
+        bcrypt.compare(password, result[0].hash, (error, response) => {
+          // will return true if passwords are a match
           if (response){
             req.session.user = result;
-            console.log(req.session.user);
-             res.send(result)
+            res.send(result)
           } else {
             // if no user found then send back a message saying no user found
-        res.send({message: "no user found/wrong password"})
+            res.send({message: "username not found. Please check your password"})
           }
         })
-      } else {
-        // if no user found then send back a message saying no user found
-        res.send({message: "user doesn't exist"})
-      }
+      } 
+      // else {
+      //   // if no user found then send back a message saying no user found
+      //   res.send({message: "user doesn't exist"})
+      // }
       
     } )
 })
