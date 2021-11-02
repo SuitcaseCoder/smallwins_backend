@@ -166,8 +166,6 @@ app.get('/updatesmallwin/:id', (req,res) => {
 
 // //-- DELETE WIN
 app.delete("/deletesmallwin/:id", (req, res) => {
-  console.log('---- REQUEST ----');
-  console.log(req.params);
   let newWinMsg = "new small win message to be updated to";
   let sql = `DELETE FROM wins WHERE win_id = ${req.params.id}`;
   let query = db.query(sql, (err, result) => {
@@ -224,8 +222,9 @@ app.post('/register', (req, res)=> {
 // // : https://www.youtube.com/watch?v=W-sZo6Gtx_E&t=353s
 // // : https://youtu.be/sTHWNPVNvm8 --> cookies, sessions, password hash
 
+// gets called when login endpoint is hit
 app.get('/login', (req, res) => {
-  console.log(`WE ARE HERE -------- response in backend from making get request to /login: ${res}`);
+  console.log(`WE ARE HERE: response in backend from making get request to /login: `);
   if(req.session.user){
     res.send({loggedIn: true, user: req.session.user})
   } else {
@@ -233,21 +232,27 @@ app.get('/login', (req, res) => {
   }
 })
 
+
+// gets called when login button gets clicked
 app.post('/login', (req, res) => {
   console.log(`___________post request from backend to /login`);
+  console.log(req.body.username);
     // firstname comes from front end --> signup.js file in the register function
     const username = req.body.username;
     const password = req.body.password;
   
     // users is the name of the database (user table in sql)
     db.query(
-      "SELECT * FROM users WHERE username = ?", 
-      username, 
+      `SELECT * FROM users WHERE username = ${username}`, 
+      // username, 
     (err, result)=> {
+      console.log("--- result ---");
+      console.log(JSON.stringify(result));
       // if err occurs, log the error
       if(err){
       res.send({err:err})
       } 
+      else 
 
        // if there is a result ( a user with that username and password), send that result back to front end
       if (result.length > 0 ) {
