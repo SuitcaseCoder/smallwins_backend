@@ -111,8 +111,6 @@ app.get('/allwins', function(req,res){
       console.log(error);
       console.log('Error in query');
    } else {
-      console.log('ROWS : ----> ');
-      console.log(rows);
     res.send(rows);
 }}
 )
@@ -123,9 +121,9 @@ app.get('/allwins', function(req,res){
 app.post('/addwin1', (req,res)  => {
 // whatever is being passed in as a new small win (from input)
 let addedWin = req.body;
-  let sql = `INSERT INTO wins (win_title) VALUES ('${addedWin.win_title}');`;
+  let sql = `INSERT INTO wins (win_title, user_id) VALUES ('${addedWin.win_title}' , '${addedWin.user_id}');`;
   // let query =
-   db.query(sql, addedWin.win_title, (err, result) => {
+   db.query(sql, [addedWin.win_title, addedWin.user_id], (err, result) => {
     if(err) throw err;
     res.send();
     })
@@ -225,12 +223,17 @@ app.post('/register', (req, res)=> {
 // gets called when login endpoint is hit
 app.get('/login', (req, res) => {
   console.log(`WE ARE HERE: response in backend from making get request to /login: `);
-  console.log(req.session.user);
-  if(req.session.user){
-    res.send({loggedIn: true, user: req.session.user})
-  } else {
-    res.send({loggedIn: false})
-  }
+  console.log("------------------------------------------------------------ RES -------------------------------------------------------------------------------------")
+  if(!req.session.user){ res.send({isLoggedIn: false})}
+  else{res.send({isLoggedIn: true, user: req.session.user})}
+  // if(req.session.user){
+  //   res.send({loggedIn: true, user: req.session.user})
+  //   // res.send({user: req.session.user})
+  // } else {
+  //   res.send({loggedIn: false})
+  //   // res.send({message: "user not logged in"})
+
+  // }
 })
 
 
@@ -259,17 +262,15 @@ app.post('/login', (req, res) => {
           // will return true if passwords are a match
           if (response){
             req.session.user = result;
-            res.send(result)
+            //if login successful, send back isLoggedin true and the result (user)
+            res.send({isLoggedIn: true, result})
           } else {
             // if no user found then send back a message saying no user found
             res.send({message: "username not found. Please check your password"})
           }
         })
       } 
-      // else {
-      //   // if no user found then send back a message saying no user found
-      //   res.send({message: "user doesn't exist"})
-      // }
+
       
     } )
 })
