@@ -29,6 +29,7 @@ const port = 5000;
 // import for the registration form
 const cors = require("cors");
 const { json } = require('body-parser');
+const { add } = require('nodemon/lib/rules');
 
 // // app.use json for the registration form
 app.use(express.json());
@@ -54,7 +55,7 @@ app.use(session({
 
 app.get('/createdb', (req,res) =>{
   // let sql = 'CREATE DATABASE IF NOT EXISTS smallwinsdb';
-  let sql = `CREATE TABLE IF NOT EXISTS users(id INT NOT NULL AUTO_INCREMENT, PRIMARY KEY(id), first_name VARCHAR(255), last_name VARCHAR(255), username VARCHAR(255), email VARCHAR(320), hash VARCHAR(320), FOREIGN KEY (id) REFERENCES wins (id))`;
+  let sql = `CREATE TABLE IF NOT EXISTS users(id VARCHAR(255) NOT NULL AUTO_INCREMENT, PRIMARY KEY(id), first_name VARCHAR(255), last_name VARCHAR(255), username VARCHAR(255), email VARCHAR(320), hash VARCHAR(320), FOREIGN KEY (id) REFERENCES wins (id))`;
   db.query(sql, (err, result) => {
     if(err) throw err;
     res.send('database created');
@@ -117,13 +118,16 @@ app.get('/allwins', function(req,res){
 })
 
 
-// -- INSERT WIN 1
+// POST ADDWIN1  (inserts 1 win into table)
+// 🟡 MISSING: 
+// // capture the last letter,
+// // pass in user_id from frontend 
+
 app.post('/addwin1', (req,res)  => {
-// whatever is being passed in as a new small win (from input)
 let addedWin = req.body;
-  let sql = `INSERT INTO wins (win_title, user_id) VALUES ('${addedWin.win_title}' , '${addedWin.user_id}');`;
+  let sql = `INSERT INTO wins (win_title, win_id) VALUES ('${addedWin.win_title}' , '${addedWin.id}');`;
   // let query =
-   db.query(sql, [addedWin.win_title, addedWin.user_id], (err, result) => {
+   db.query(sql, [addedWin.win_title, addedWin.win_id], (err, result) => {
     if(err) throw err;
     res.send();
     })
@@ -162,10 +166,10 @@ app.get('/updatesmallwin/:id', (req,res) => {
   })
 });
 
-// //-- DELETE WIN
+// ✅ DELETE WIN WORKS 
 app.delete("/deletesmallwin/:id", (req, res) => {
   let newWinMsg = "new small win message to be updated to";
-  let sql = `DELETE FROM wins WHERE win_id = ${req.params.id}`;
+  let sql = `DELETE FROM wins WHERE win_id = "${req.params.id}"`;
   let query = db.query(sql, (err, result) => {
     if (err) throw err;
     // console.log(result);
@@ -222,8 +226,6 @@ app.post('/register', (req, res)=> {
 
 // gets called when login endpoint is hit
 app.get('/login', (req, res) => {
-  console.log(`WE ARE HERE: response in backend from making get request to /login: `);
-  console.log("------------------------------------------------------------ RES -------------------------------------------------------------------------------------")
   if(!req.session.user){ res.send({isLoggedIn: false})}
   else{res.send({isLoggedIn: true, user: req.session.user})}
   // if(req.session.user){
@@ -237,19 +239,17 @@ app.get('/login', (req, res) => {
 })
 
 
+// ✅ Login on click, works
 // gets called when login button gets clicked
 app.post('/login', (req, res) => {
     // firstname comes from front end --> signup.js file in the register function
     const username = req.body.username;
     const password = req.body.password;
-  
     // users is the name of the database (user table in sql)
     db.query(
       `SELECT * FROM users WHERE username = ?`, 
       username, 
     (err, result)=> {
-      // console.log("--- result ---");
-      // console.log(JSON.stringify(result));
       // if err occurs, log the error
       if(err){
       res.send({err:err})
