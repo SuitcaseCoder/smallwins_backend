@@ -184,13 +184,19 @@ app.delete("/deletesmallwin/:id", (req, res) => {
 
 app.post('/register', (req, res)=> {
  console.log('register worked backend');
-//  console.log('register response in backend: ' + res, req);
+ console.log('register response in backend: ' + res, req);
  // firstname comes from front end --> signup.js file in the register function
   const firstname = req.body.first_name;
   const lastname = req.body.last_name;
   const username = req.body.username;
   const email = req.body.email;
   const password =  req.body.password;
+
+  console.log("fname:", firstname);
+  console.log("lname",lastname);
+  console.log("uname", username);
+  console.log("email", email);
+  console.log("pass", password);
 
   // bcrypt for password hashing
   bcrypt.hash(password, saltRounds, (err, hash) => {
@@ -243,8 +249,10 @@ app.get('/login', (req, res) => {
 // gets called when login button gets clicked
 app.post('/login', (req, res) => {
     // firstname comes from front end --> signup.js file in the register function
+    console.log("REQ",req.body);
     const username = req.body.username;
     const password = req.body.password;
+    console.log('----- username & pass -----: ', username, password);
     // users is the name of the database (user table in sql)
     db.query(
       `SELECT * FROM users WHERE username = ?`, 
