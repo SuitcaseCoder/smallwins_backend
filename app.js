@@ -209,7 +209,6 @@ app.post('/register', (req, res)=> {
       // let sql = `INSERT INTO users (first_name, last_name, username, email, hash) VALUES (${firstname}, ${lastname}, ${username}, ${email}, ${hash})`;
       // db.query(sql, [firstname, lastname, username, email, hash],
       // [firstname, lastname, username, email, hash],
-      // 📌📌📌📌📌📌 pick up right here
       db.query(`INSERT INTO users (first_name, last_name, username, email, hash) VALUES ('${firstname}', '${lastname}', '${username}', '${email}', '${hash}');`,[firstname, lastname, username, email, hash], 
       (err, result, fields)=> {
         
