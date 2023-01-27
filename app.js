@@ -168,14 +168,14 @@ app.get('/updatesmallwin/:id', (req,res) => {
 
 // ✅ DELETE WIN WORKS 
 app.delete("/deletesmallwin/:id", (req, res) => {
-  console.log("REQ: ", req);
   let newWinMsg = "new small win message to be updated to";
   let sql = `DELETE FROM wins WHERE win_id = "${req.params.id}"`;
   let query = db.query(sql, (err, result) => {
     if (err) throw err;
-    console.log(result);
     res.send(newWinMsg);
+
   });
+
 });
 
 // // -- USER REGISTRATION 
