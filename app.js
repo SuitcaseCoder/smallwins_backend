@@ -168,11 +168,12 @@ app.get('/updatesmallwin/:id', (req,res) => {
 
 // ✅ DELETE WIN WORKS 
 app.delete("/deletesmallwin/:id", (req, res) => {
+  console.log("REQ: ", req);
   let newWinMsg = "new small win message to be updated to";
   let sql = `DELETE FROM wins WHERE win_id = "${req.params.id}"`;
   let query = db.query(sql, (err, result) => {
     if (err) throw err;
-    // console.log(result);
+    console.log(result);
     res.send(newWinMsg);
   });
 });
@@ -252,7 +253,7 @@ app.post('/login', (req, res) => {
     console.log("REQ",req.body);
     const username = req.body.username;
     const password = req.body.password;
-    console.log('----- username & pass -----: ', username, password);
+ 
     // users is the name of the database (user table in sql)
     db.query(
       `SELECT * FROM users WHERE username = ?`, 
