@@ -52,15 +52,24 @@ app.use(session({
 }))
 
 
+// I HAD TO DO EACH OF THESE INDIVIDUALLY IN THE "sql" variable upon clicking of the button
+// wins table
+// CREATE TABLE IF NOT EXISTS wins(id INT NOT NULL AUTO_INCREMENT, win_title VARCHAR(255),PRIMARY KEY (id), user_id INT NOT NULL, FOREIGN KEY (user_id)references users(id));
+
+  // let sql = `CREATE TABLE IF NOT EXISTS wins(id INT NOT NULL AUTO_INCREMENT, win_title VARCHAR(255),PRIMARY KEY (id), user_id INT NOT NULL, FOREIGN KEY (user_id)references users(id));`;
+
+// CREATE TABLE IF NOT EXISTS users(id INT NOT NULL AUTO_INCREMENT,PRIMARY KEY(id),first_name VARCHAR(255),last_name VARCHAR(255),username VARCHAR(255),email VARCHAR(320),hash VARCHAR(320));  
 
 app.get('/createdb', (req,res) =>{
   // let sql = 'CREATE DATABASE IF NOT EXISTS smallwinsdb';
-  let sql = `CREATE TABLE IF NOT EXISTS users(id VARCHAR(255) NOT NULL AUTO_INCREMENT, PRIMARY KEY(id), first_name VARCHAR(255), last_name VARCHAR(255), username VARCHAR(255), email VARCHAR(320), hash VARCHAR(320), FOREIGN KEY (id) REFERENCES wins (id))`;
+  // let sql = `DROP TABLE users, wins;`
+  let sql = `CREATE TABLE IF NOT EXISTS wins(id VARCHAR(255) NOT NULL, win_title VARCHAR(255),PRIMARY KEY (id), user_id INT NOT NULL, FOREIGN KEY (user_id)references users(id));`;
   db.query(sql, (err, result) => {
     if(err) throw err;
     res.send('database created');
   })
 })
+
 
 
 const db = mysql.createConnection({
@@ -123,9 +132,11 @@ app.get('/allwins', function(req,res){
 // // capture the last letter,
 // // pass in user_id from frontend 
 
+// 📌📌📌 gotta find the user id
 app.post('/addwin1', (req,res)  => {
 let addedWin = req.body;
-  let sql = `INSERT INTO wins (win_title, win_id) VALUES ('${addedWin.win_title}' , '${addedWin.id}');`;
+console.log(addedWin);
+  let sql = `INSERT INTO wins (win_title, id, user_id) VALUES ('${addedWin.win_title}' , '${addedWin.id}', ${addedWin.user_id});`;
   // let query =
    db.query(sql, [addedWin.win_title, addedWin.win_id], (err, result) => {
     if(err) throw err;
