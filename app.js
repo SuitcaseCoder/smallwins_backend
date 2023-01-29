@@ -114,9 +114,9 @@ db.connect((err) => {
 
 
 // get all wins
-app.get('/allwins', function(req,res){
+app.get('/allwins/:id', function(req,res){
   // MAYBE: SELECT * FROM wins_table WHERE ... ((not so sure abou this part, but where user_id matches or is equal to the id being passed in from the user loggedin, so maybe add a loggedin id to the state in frontend if user is loggedin, so we can pass that around in the backend))
- db.query("SELECT * FROM wins", function(error, rows, fields){
+ db.query(`SELECT * FROM wins WHERE user_id = ${req.params.id}`, function(error, rows, fields){
     if(!!error){
       console.log(error);
       console.log('Error in query');
@@ -138,7 +138,7 @@ let addedWin = req.body;
 console.log(addedWin);
   let sql = `INSERT INTO wins (win_title, id, user_id) VALUES ('${addedWin.win_title}' , '${addedWin.id}', ${addedWin.user_id});`;
   // let query =
-   db.query(sql, [addedWin.win_title, addedWin.win_id], (err, result) => {
+   db.query(sql, [addedWin.win_title, addedWin.id], (err, result) => {
     if(err) throw err;
     res.send();
     })
@@ -180,7 +180,7 @@ app.get('/updatesmallwin/:id', (req,res) => {
 // ✅ DELETE WIN WORKS 
 app.delete("/deletesmallwin/:id", (req, res) => {
   let newWinMsg = "new small win message to be updated to";
-  let sql = `DELETE FROM wins WHERE win_id = "${req.params.id}"`;
+  let sql = `DELETE FROM wins WHERE id = "${req.params.id}"`;
   let query = db.query(sql, (err, result) => {
     if (err) throw err;
     res.send(newWinMsg);
