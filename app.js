@@ -166,6 +166,7 @@ app.get('/getsmallwins/:id', (req,res) => {
 });
 
 
+
  // //-- UPDATE WINS
 app.get('/updatesmallwin/:id', (req,res) => {
   let newWinMsg = "new small win message to be updated to";
@@ -193,7 +194,7 @@ app.delete("/deletesmallwin/:id", (req, res) => {
 // // : https://www.youtube.com/watch?v=W-sZo6Gtx_E&t=353s
 //  let sql = 'CREATE TABLE IF NOT EXISTS wins (id INT NOT NULL AUTO_INCREMENT, win_title VARCHAR(255), PRIMARY KEY (id));';
 
-
+// ✅ SIGNUP WIN WORKS 
 app.post('/register', (req, res)=> {
  console.log('register worked backend');
  console.log('register response in backend: ' + res, req);
@@ -238,6 +239,7 @@ app.post('/register', (req, res)=> {
 
 })
 
+// ✅ LOGIN WIN WORKS 
 // // --USER LOGIN
 // // : https://www.youtube.com/watch?v=W-sZo6Gtx_E&t=353s
 // // : https://youtu.be/sTHWNPVNvm8 --> cookies, sessions, password hash
